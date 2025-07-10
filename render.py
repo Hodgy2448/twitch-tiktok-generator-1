@@ -1,5 +1,6 @@
 import subprocess
 import os
+import textwrap
 
 
 def extract_resolution(input_file: str) -> tuple[int]:
@@ -32,26 +33,62 @@ def blur_video(input_file: str, output_file: str, blur: int = 15):
     subprocess.run(cmd, shell=True)
 
 
-def create_mobile_video(background_file, content_file, facecam_file, output_file, blur_strength=15, watermark_file=None, fps=60):
+def create_mobile_video(background_file, content_file, facecam_file, output_file, overlay_text_top=None, overlay_text_bottom=None, blur_strength=15, watermark_file=None, fps=60):
     _, content_height = extract_resolution(content_file)
     background_width, background_height = extract_resolution(background_file)
     content_x = 0
     content_y = int((background_height - content_height) / 2)
+    input_args = f'-i {background_file} -i {content_file}'
+    filter_complex = f'[0:v] boxblur={blur_strength}:1 [a]; [a][1:v] overlay={content_x}:{content_y} [b]'
+    last_label = 'b'
 
     if facecam_file is not None:
         facecam_width, _ = extract_resolution(facecam_file)
         facecam_x = int((background_width - facecam_width) / 2)
         facecam_y = 0
-        filter_complex = f'[0:v] boxblur={blur_strength}:1 [a]; [a][1:v] overlay={content_x}:{content_y} [b]; [b][2:v] overlay={facecam_x}:{facecam_y}'
-        input_args = f'-i {background_file} -i {content_file} -i {facecam_file}'
-    else:
-        filter_complex = f'[0:v] boxblur={blur_strength}:1 [a]; [a][1:v] overlay={content_x}:{content_y}'
-        input_args = f'-i {background_file} -i {content_file}'
+        input_args += f' -i {facecam_file}'
+        filter_complex += f'; [b][2:v] overlay={facecam_x}:{facecam_y} [c]'
+        last_label = 'c'
 
     if watermark_file:
-        watermark_command = f"[3:v] scale=500:100,colorchannelmixer=aa=0.5 [d]; [c][d] overlay=10:1720"
-        filter_complex = f"{filter_complex};{watermark_command}"
         input_args += f' -i {watermark_file}'
+        filter_complex += f'; [{last_label}][3:v] scale=500:100,colorchannelmixer=aa=0.5 [d]; [d] overlay=10:1720 [e]'
+        last_label = 'e'
 
-    cmd = f"ffmpeg -y {input_args} -filter_complex '{filter_complex}' -r {fps} -c:v libx264 -pix_fmt yuv420p {output_file}"
+    if overlay_text_top:
+        wrapped_lines = textwrap.wrap(overlay_text_top, width=30)  # adjust width
+        for i, line in enumerate(wrapped_lines):
+            safe_text = line.replace("'", r"\'") + "\u00A0\u00A0"
+            y_pos = f"h-{1550 - i * 80}"
+            filter_complex += (
+                f'; [{last_label}]drawtext='
+                f"text='{safe_text} ':"
+                f"fontfile=Bangers-Regular.ttf:"
+                f"fontcolor=white:fontsize=90:x=(w-text_w)/2:y={y_pos}:"
+                f"borderw=5:bordercolor=black;"
+                f"[t{i}]"
+            )
+            last_label = f't{i}'
+
+    if overlay_text_bottom:
+        wrapped_lines = textwrap.wrap(overlay_text_bottom, width=30)  # adjust width
+        for i, line in enumerate(wrapped_lines):
+            safe_text = line.replace("'", r"\'") + "\u00A0\u00A0"
+            y_pos = f"h-{450 - i * 80}"
+            filter_complex += (
+                f'; [{last_label}]drawtext='
+                f"text='{safe_text} ':"
+                f"fontfile=Bangers-Regular.ttf:"
+                f"fontcolor=white:fontsize=80:x=(w-text_w)/2:y={y_pos}:"
+                f"borderw=5:bordercolor=black"
+                f"[b{i}]"
+            )
+            last_label = f'b{i}'
+
+    cmd = (
+        f'ffmpeg -y {input_args} -filter_complex "{filter_complex}" '
+        f'-map "[{last_label}]" -map 0:a? -r {fps} -c:v libx264 -c:a aac -pix_fmt yuv420p {output_file}'
+    )
+
     subprocess.run(cmd, shell=True)
+

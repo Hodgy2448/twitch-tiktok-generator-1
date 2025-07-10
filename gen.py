@@ -34,7 +34,7 @@ class TikTokGenerator:
     def blur(self, path: str, blur: int = 15):
         blur_video(path, 'output.mp4', blur)
 
-    def generate(self, path: str, output: str = 'output', fd_fps: int = 1, blur: int = 20, width=720, height=1280, no_facecam: bool = False, fps: int = 60, x_offset: int = 0, y_offset: int = 0):
+    def generate(self, path: str, output: str = 'output', text1: str=None , text2:str =None,fd_fps: int = 1, blur: int = 20, width=1080, height=1920, no_facecam: bool = False, fps: int = 60, x_offset: int = 0, y_offset: int = 0):
         if path.startswith('http'):
             path = download(path, '.')
             # if there is a space in the filename, rename
@@ -46,6 +46,10 @@ class TikTokGenerator:
             height -= 1
         if width % 2 != 0:
             width -= 1
+        output = text1
+        if ' ' in output:
+                new_output = output.replace(' ', '_')
+                output = new_output
         background = f'{output}_background.mp4'
         box = f'{output}_box.mp4'
         facecam = None
@@ -70,15 +74,26 @@ class TikTokGenerator:
         # get the center 1:1 content of the video
         x = (bg_width - bg_height) / 2 + x_offset
         y = 0 + y_offset
-        w = bg_height
+        w = bg_width
         h = bg_height
-        crop_video(path, box, x, y, w, h, width, width)
+        box_scale = 0.9
+        box_width = int(width * box_scale) + 200
+        box_height = int(width * box_scale) - 100
+
+        # Ensure dimensions are even (required by many codecs)
+        if box_width % 2 != 0:
+            box_width -= 1
+        if box_height % 2 != 0:
+            box_height -= 1
+
+        crop_video(path, box, x, y, w, h, box_width, box_height)
         create_mobile_video(background, box, facecam,
-                            f'{output}.mp4', blur_strength=blur, fps=fps)
+                            f'{output}.mp4', text1, text2, blur_strength=blur, fps=fps)
         if not no_facecam:
             os.remove(facecam)
         os.remove(background)
         os.remove(box)
+        os.remove(path)
 
     def blur_box(self, path: str, output: str = 'output', blur: int = 20, width=720, height=1280, fps: int = 60):
         '''Takes a square video, blurs it, makes it 9:16, then add the original video on top of it'''

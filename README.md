@@ -29,3 +29,17 @@ python3 gen.py generate https://clips.twitch.tv/TenaciousPiliableMonitorOhMyDog-
 ```
 
 And that's it! Output file will be found in the current working directory.
+
+DO THIS!!!
+f:
+cd twitch-
+pipenv shell
+
+python gen.py generate https://www.twitch.tv/thaqil/clip/ImpartialAnimatedClipzNomNom-JnLk34HYv3sNGbVC --output tiktokclip --text "THIS GUY IS SO BAD"
+
+python gen.py generate https://www.youtube.com/watch?v=pPUp9pdmVZo --no_facecam --text1 "Tides of Tomorrow - Release Date Trailer" --text2 "New game to play with friends"
+
+The quality of this game is crazy
+
+GAME: Prison Boss Prohibition - NEW ! On Steam now! @TREBUCHET
+
