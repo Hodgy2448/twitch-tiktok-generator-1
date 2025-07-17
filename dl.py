@@ -3,7 +3,7 @@ from yt_dlp import YoutubeDL
 
 def download(url, output_dir, output_format=None, cookies=None):
     if output_format is None:
-        output_format = 'bestvideo[height<=1440]+bestaudio/best[height<=1440]/best'
+        output_format = 'bestvideo[height<=2160]+bestaudio/best[height<=2160]/best'
 
     ydl_opts = {
         'format': output_format,
