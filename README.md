@@ -18,18 +18,15 @@ python gen.py generate https://www.twitch.tv/thaqil/clip/ImpartialAnimatedClipzN
 
 
 
-python gen.py generate https://www.youtube.com/watch?v=evCtTIhbDjA --text1 "Liminal Exit - Official Reveal Trailer" --text2 "NEW immersive puzzle simulation game" --cookies cookies.txt --no_facecam
+python gen.py generate https://www.youtube.com/watch?v=SDPZdxPWUgE --text1 "Legacy of Valor - Playtest Trailer" --text2 "New medieval RPG game" --cookies cookies.txt --no_facecam
 
 
+New medieval RPG game! Play test out now on PC
 
-New immersive puzzle simulation game! Wishlist now
+Build, lead, trade, and fight to create a lasting legacy. Expand your village, build castle, protect your people, and guide them through wars, prosperity, and history in a living medieval world.
 
-Step into an uncanny building trapped in endless loops. Use the elevator, uncover unsettling anomalies, and evade the Entity lurking behind you. Liminal Exit, an immersive walking simulator inspired by liminal spaces. Can you escape, or will you remain forever trapped?
-
-Developer: LittleRedDread
-Release Date: Q3 2025 to PC (Steam)
-
-
+Developer: Filip Husák
+Release Date: TBA
 
 
 

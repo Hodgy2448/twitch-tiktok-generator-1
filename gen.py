@@ -46,6 +46,10 @@ class TikTokGenerator:
                 new_path = path.replace('&', '_')
                 os.rename(path, new_path)
                 path = new_path
+            if '|' in path:
+                new_path = path.replace('|', '_')
+                os.rename(path, new_path)
+                path = new_path
         if height % 2 != 0:
             height -= 1
         if width % 2 != 0:
@@ -123,7 +127,6 @@ class TikTokGenerator:
     def extract(self, input_file: str):
         '''Extracts the center 9:16 portion of the video'''
         width, height = extract_resolution(input_file)
-        print(f"Resolution: {width}x{height}")
 
 
 if __name__ == '__main__':
