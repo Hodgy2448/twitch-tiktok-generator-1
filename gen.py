@@ -34,12 +34,16 @@ class TikTokGenerator:
     def blur(self, path: str, blur: int = 15):
         blur_video(path, 'output.mp4', blur)
 
-    def generate(self, path: str, output: str = 'output', text1: str=None , text2:str =None,fd_fps: int = 1, blur: int = 20, width=1080, height=1920, no_facecam: bool = False, fps: int = 60, x_offset: int = 0, y_offset: int = 0):
+    def generate(self, path: str, output: str = 'output', text1: str=None , text2:str =None,fd_fps: int = 1, blur: int = 20, width=1080, height=1920, no_facecam: bool = False, fps: int = 60, x_offset: int = 0, y_offset: int = 0, cookies: str = None):
         if path.startswith('http'):
-            path = download(path, '.')
+            path = download(path, '.', cookies=cookies)
             # if there is a space in the filename, rename
             if ' ' in path:
                 new_path = path.replace(' ', '_')
+                os.rename(path, new_path)
+                path = new_path
+            if '&' in path:
+                new_path = path.replace('&', '_')
                 os.rename(path, new_path)
                 path = new_path
         if height % 2 != 0:
@@ -78,7 +82,7 @@ class TikTokGenerator:
         h = bg_height
         box_scale = 0.9
         box_width = int(width * box_scale) + 200
-        box_height = int(width * box_scale) - 100
+        box_height = int(width * box_scale) - 200
 
         # Ensure dimensions are even (required by many codecs)
         if box_width % 2 != 0:

@@ -59,28 +59,28 @@ def create_mobile_video(background_file, content_file, facecam_file, output_file
         wrapped_lines = textwrap.wrap(overlay_text_top, width=30)  # adjust width
         for i, line in enumerate(wrapped_lines):
             safe_text = line.replace("'", r"\'") + "\u00A0\u00A0"
-            y_pos = f"h-{1550 - i * 80}"
+            y_pos = f"h-{1530 - i * 80}"
             filter_complex += (
                 f'; [{last_label}]drawtext='
-                f"text='{safe_text}':"
+                f"text='{safe_text} ':"
                 f"fontfile=Bangers-Regular.ttf:"
-                f"fontcolor=white:fontsize=90:x=(w-text_w)/2:y={y_pos}:"
-                f"borderw=5:bordercolor=black;"
+                f"fontcolor=white:fontsize=90:x=(w-text_w)/2+10:y={y_pos}:"
+                f"borderw=5:bordercolor=black"
                 f"[t{i}]"
             )
             last_label = f't{i}'
 
     if overlay_text_bottom:
-        wrapped_lines = textwrap.wrap(overlay_text_bottom, width=30)  # adjust width
+        wrapped_lines = textwrap.wrap(overlay_text_bottom, width=25)  # adjust width
         for i, line in enumerate(wrapped_lines):
             safe_text = line.replace("'", r"\'") + "\u00A0\u00A0"
-            y_pos = f"h-{450 - i * 80}"
+            y_pos = f"h-{510 - i * 80}"
             filter_complex += (
                 f'; [{last_label}]drawtext='
-                f"text='{safe_text}':"
+                f"text='{safe_text} ':"
                 f"fontfile=Bangers-Regular.ttf:"
                 f"fontcolor=white:fontsize=80:x=(w-text_w)/2:y={y_pos}:"
-                f"borderw=5:bordercolor=black;"
+                f"borderw=5:bordercolor=black"
                 f"[b{i}]"
             )
             last_label = f'b{i}'

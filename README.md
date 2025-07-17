@@ -1,3 +1,51 @@
+
+
+
+
+ː colon
+
+
+
+DO THIS!!!
+f:
+cd twitch-
+pipenv shell
+
+python gen.py generate https://www.twitch.tv/thaqil/clip/ImpartialAnimatedClipzNomNom-JnLk34HYv3sNGbVC --output tiktokclip --text "THIS GUY IS SO BAD"
+
+
+
+
+
+
+python gen.py generate https://www.youtube.com/watch?v=evCtTIhbDjA --text1 "Liminal Exit - Official Reveal Trailer" --text2 "NEW immersive puzzle simulation game" --cookies cookies.txt --no_facecam
+
+
+
+New immersive puzzle simulation game! Wishlist now
+
+Step into an uncanny building trapped in endless loops. Use the elevator, uncover unsettling anomalies, and evade the Entity lurking behind you. Liminal Exit, an immersive walking simulator inspired by liminal spaces. Can you escape, or will you remain forever trapped?
+
+Developer: LittleRedDread
+Release Date: Q3 2025 to PC (Steam)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # Twitch Clip to TikTok Generator
 
 This will locally convert a Twitch clip (or any clip) at a given URL to a vertical format video with facecam that can be uploaded to TikTok, Snapchat, Instagram, or any other vertical format video sharing sites. This tool is aimed at gaming videos.
@@ -29,17 +77,4 @@ python3 gen.py generate https://clips.twitch.tv/TenaciousPiliableMonitorOhMyDog-
 ```
 
 And that's it! Output file will be found in the current working directory.
-
-DO THIS!!!
-f:
-cd twitch-
-pipenv shell
-
-python gen.py generate https://www.twitch.tv/thaqil/clip/ImpartialAnimatedClipzNomNom-JnLk34HYv3sNGbVC --output tiktokclip --text "THIS GUY IS SO BAD"
-
-python gen.py generate https://www.youtube.com/watch?v=pPUp9pdmVZo --no_facecam --text1 "Tides of Tomorrow - Release Date Trailer" --text2 "New game to play with friends"
-
-The quality of this game is crazy
-
-GAME: Prison Boss Prohibition - NEW ! On Steam now! @TREBUCHET
 
