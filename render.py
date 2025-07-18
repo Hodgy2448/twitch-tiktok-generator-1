@@ -62,15 +62,15 @@ def create_mobile_video(
         input_index += 1
 
     # Hardcoded text background image
-    text_bg_path = os.path.join(os.path.dirname(__file__), 'background_title_4k.png')
-    input_args += f' -i "{text_bg_path}"'
-    filter_complex += f'; [{last_label}][{input_index}:v] overlay=0:420 [d]'
-    last_label = 'd'
-    input_index += 1
+    # text_bg_path = os.path.join(os.path.dirname(__file__), 'background_title_4k.png')
+    # input_args += f' -i "{text_bg_path}"'
+    # filter_complex += f'; [{last_label}][{input_index}:v] overlay=0:440 [d]'
+    # last_label = 'd'
+    # input_index += 1
 
     text_bg_path2 = os.path.join(os.path.dirname(__file__), 'populargamingcontent_tag_4k.png')
     input_args += f' -i "{text_bg_path2}"'
-    filter_complex += f'; [{last_label}][{input_index}:v] overlay=700:420 [d]'
+    filter_complex += f'; [{last_label}][{input_index}:v] overlay=700:3000 [d]'
     last_label = 'd'
     input_index += 1
 
@@ -84,15 +84,15 @@ def create_mobile_video(
         input_index += 1
 
     if overlay_text_top:
-        wrapped_lines = textwrap.wrap(overlay_text_top, width=30)
+        wrapped_lines = textwrap.wrap(overlay_text_top, width=25)
         for i, line in enumerate(wrapped_lines):
             safe_text = line.replace("'", r"\'") + "\u00A0\u00A0"
-            y_pos = f"h-{1540 - i * 80}"
+            y_pos = f"h-{3200 - i * 200}"
             filter_complex += (
                 f'; [{last_label}]drawtext='
                 f"text='{safe_text} ':"
                 f"fontfile=Bangers-Regular.ttf:"
-                f"fontcolor=white:fontsize=560:x=(w-text_w)/2+10:y={y_pos}:"
+                f"fontcolor=white:fontsize=190:x=(w-text_w)/2+12:y={y_pos}+20:"
                 f"borderw=5:bordercolor=black"
                 f"[t{i}]"
             )
@@ -102,12 +102,12 @@ def create_mobile_video(
         wrapped_lines = textwrap.wrap(overlay_text_bottom, width=25)
         for i, line in enumerate(wrapped_lines):
             safe_text = line.replace("'", r"\'") + "\u00A0\u00A0"
-            y_pos = f"h-{510 - i * 80}"
+            y_pos = f"h-{1050 - i * 200}"
             filter_complex += (
                 f'; [{last_label}]drawtext='
                 f"text='{safe_text} ':"
                 f"fontfile=Bangers-Regular.ttf:"
-                f"fontcolor=white:fontsize=600:x=(w-text_w)/2:y={y_pos}:"
+                f"fontcolor=white:fontsize=180:x=(w-text_w)/2+12:y={y_pos}:"
                 f"borderw=5:bordercolor=black"
                 f"[b{i}]"
             )

@@ -80,13 +80,13 @@ class TikTokGenerator:
         y = 0
         crop_video(path, background, x, y, w, h, width, height)
         # get the center 1:1 content of the video
-        x = (bg_width - bg_height) / 2 + x_offset
+        x = (bg_width - bg_height) / 2 + x_offset + 50
         y = 0 + y_offset
         w = bg_width
         h = bg_height
         box_scale = 1
         box_width = int(width * box_scale)
-        box_height = int(width * box_scale)
+        box_height = int(width * box_scale) - 500
 
         # Ensure dimensions are even (required by many codecs)
         if box_width % 2 != 0:
