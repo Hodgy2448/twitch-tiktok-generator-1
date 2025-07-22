@@ -8,7 +8,7 @@ numpy = "*"
 opencv-python = "*"
 fire = "*"
 yt-dlp = {git = "https://github.com/yt-dlp/yt-dlp.git"}
-gTTS = "*"
+gtts = "*"
 
 [dev-packages]
 autopep8 = "*"

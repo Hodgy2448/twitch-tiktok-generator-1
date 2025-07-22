@@ -5,6 +5,7 @@ import fire
 from dl import download
 from facial_detection import facial_detection, draw_box
 from render import crop_video, extract_resolution, blur_video, create_mobile_video
+from tts import generate_voiceover
 
 
 class TikTokGenerator:
@@ -34,7 +35,7 @@ class TikTokGenerator:
     def blur(self, path: str, blur: int = 15):
         blur_video(path, 'output.mp4', blur)
 
-    def generate(self, path: str, output: str = 'output', text1: str=None , text2:str =None,fd_fps: int = 1, blur: int = 20, width=2160, height=3840, no_facecam: bool = False, fps: int = 60, x_offset: int = 0, y_offset: int = 0, cookies: str = None):
+    def generate(self, path: str, output: str = 'output', text1: str=None , text2:str =None, text3:str =None,fd_fps: int = 1, blur: int = 20, width=2160, height=3840, no_facecam: bool = False, fps: int = 60, x_offset: int = 0, y_offset: int = 0, cookies: str = None):
         if path.startswith('http'):
             path = download(path, '.', cookies=cookies)
             # if there is a space in the filename, rename
@@ -95,13 +96,19 @@ class TikTokGenerator:
             box_height -= 1
 
         crop_video(path, box, x, y, w, h, box_width, box_height)
+        voice_path = None
+        if text3:
+            voice_path = f"{output}_voice.mp3"
+            generate_voiceover(text3, voice_path)
+
         create_mobile_video(background, box, facecam,
-                            f'{output}.mp4', text1, text2, blur_strength=blur, fps=fps)
+                            f'{output}.mp4', text1, text2, blur_strength=blur, fps=fps, voiceover_file=voice_path)
         if not no_facecam:
             os.remove(facecam)
         os.remove(background)
         os.remove(box)
         os.remove(path)
+        os.remove(voice_path)
 
     def blur_box(self, path: str, output: str = 'output', blur: int = 20, width=1080, height=1920, fps: int = 60):
         '''Takes a square video, blurs it, makes it 9:16, then add the original video on top of it'''

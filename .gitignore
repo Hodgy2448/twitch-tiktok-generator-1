@@ -4,3 +4,4 @@ thumbs
 __pycache__
 *.mov
 .DS_Store
+.env

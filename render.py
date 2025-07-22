@@ -40,7 +40,8 @@ def create_mobile_video(
     overlay_text_bottom=None,
     blur_strength=15,
     watermark_file=None,
-    fps=60
+    fps=60,
+    voiceover_file=None
 ):
     _, content_height = extract_resolution(content_file)
     background_width, background_height = extract_resolution(background_file)
@@ -51,15 +52,6 @@ def create_mobile_video(
     filter_complex = f'[0:v] boxblur={blur_strength}:1 [a]; [a][1:v] overlay={content_x}:{content_y} [b]'
     last_label = 'b'
     input_index = 2
-
-    if facecam_file is not None:
-        input_args += f' -i {facecam_file}'
-        facecam_width, _ = extract_resolution(facecam_file)
-        facecam_x = int((background_width - facecam_width) / 2)
-        facecam_y = 0
-        filter_complex += f'; [{last_label}][{input_index}:v] overlay={facecam_x}:{facecam_y} [c]'
-        last_label = 'c'
-        input_index += 1
 
     # Hardcoded text background image
     # text_bg_path = os.path.join(os.path.dirname(__file__), 'background_title_4k.png')
@@ -74,6 +66,15 @@ def create_mobile_video(
     # last_label = 'd'
     # input_index += 1
 
+    if facecam_file is not None:
+        input_args += f' -i {facecam_file}'
+        facecam_width, _ = extract_resolution(facecam_file)
+        facecam_x = int((background_width - facecam_width) / 2)
+        facecam_y = 0
+        filter_complex += f'; [{last_label}][{input_index}:v] overlay={facecam_x}:{facecam_y} [c]'
+        last_label = 'c'
+        input_index += 1
+
     if watermark_file:
         input_args += f' -i {watermark_file}'
         filter_complex += (
@@ -87,10 +88,10 @@ def create_mobile_video(
         wrapped_lines = textwrap.wrap(overlay_text_top, width=25)
         for i, line in enumerate(wrapped_lines):
             safe_text = line.replace("'", r"\'") + "\u00A0\u00A0"
-            y_pos = f"h-{3200 - i * 200}"
+            y_pos = f"h-{3050 - i * 200}"
             filter_complex += (
                 f'; [{last_label}]drawtext='
-                f"text='{safe_text} ':"
+                f"text='{safe_text} ':" 
                 f"fontfile=Bangers-Regular.ttf:"
                 f"fontcolor=white:fontsize=190:x=(w-text_w)/2+12:y={y_pos}+20:"
                 f"borderw=8:bordercolor=black"
@@ -105,7 +106,7 @@ def create_mobile_video(
             y_pos = f"h-{930 - i * 200}"
             filter_complex += (
                 f'; [{last_label}]drawtext='
-                f"text='{safe_text} ':"
+                f"text='{safe_text} ':" 
                 f"fontfile=Bangers-Regular.ttf:"
                 f"fontcolor=white:fontsize=180:x=(w-text_w)/2+12:y={y_pos}:"
                 f"borderw=8:bordercolor=black"
@@ -113,9 +114,19 @@ def create_mobile_video(
             )
             last_label = f'b{i}'
 
+    if voiceover_file:
+        input_args += f' -i {voiceover_file}'
+        filter_complex += (
+        f'; [{input_index}:a]volume=3.0[vo]; '
+        f'[0:a][vo] amerge=inputs=2[aout]'
+        )
+        audio_map = f'-map "[{last_label}]" -map "[aout]" -ac 2'
+    else:
+        audio_map = f'-map "[{last_label}]" -map 0:a?'
+
     cmd = (
         f'ffmpeg -y {input_args} -filter_complex "{filter_complex}" '
-        f'-map "[{last_label}]" -map 0:a? -r {fps} '
+        f'{audio_map} -r {fps} '
         f'-c:v h264_nvenc -preset p7 -rc vbr -cq 19 -b:v 0 '
         f'-c:a aac -b:a 192k -pix_fmt yuv420p {output_file}'
     )
