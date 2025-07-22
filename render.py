@@ -68,11 +68,11 @@ def create_mobile_video(
     # last_label = 'd'
     # input_index += 1
 
-    text_bg_path2 = os.path.join(os.path.dirname(__file__), 'populargamingcontent_tag_4k.png')
-    input_args += f' -i "{text_bg_path2}"'
-    filter_complex += f'; [{last_label}][{input_index}:v] overlay=700:3000 [d]'
-    last_label = 'd'
-    input_index += 1
+    # text_bg_path2 = os.path.join(os.path.dirname(__file__), 'populargamingcontent_tag_4k.png')
+    # input_args += f' -i "{text_bg_path2}"'
+    # filter_complex += f'; [{last_label}][{input_index}:v] overlay=700:440 [d]'
+    # last_label = 'd'
+    # input_index += 1
 
     if watermark_file:
         input_args += f' -i {watermark_file}'
@@ -93,7 +93,7 @@ def create_mobile_video(
                 f"text='{safe_text} ':"
                 f"fontfile=Bangers-Regular.ttf:"
                 f"fontcolor=white:fontsize=190:x=(w-text_w)/2+12:y={y_pos}+20:"
-                f"borderw=5:bordercolor=black"
+                f"borderw=8:bordercolor=black"
                 f"[t{i}]"
             )
             last_label = f't{i}'
@@ -102,13 +102,13 @@ def create_mobile_video(
         wrapped_lines = textwrap.wrap(overlay_text_bottom, width=25)
         for i, line in enumerate(wrapped_lines):
             safe_text = line.replace("'", r"\'") + "\u00A0\u00A0"
-            y_pos = f"h-{1050 - i * 200}"
+            y_pos = f"h-{930 - i * 200}"
             filter_complex += (
                 f'; [{last_label}]drawtext='
                 f"text='{safe_text} ':"
                 f"fontfile=Bangers-Regular.ttf:"
                 f"fontcolor=white:fontsize=180:x=(w-text_w)/2+12:y={y_pos}:"
-                f"borderw=5:bordercolor=black"
+                f"borderw=8:bordercolor=black"
                 f"[b{i}]"
             )
             last_label = f'b{i}'

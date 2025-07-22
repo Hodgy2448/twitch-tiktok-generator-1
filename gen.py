@@ -86,7 +86,7 @@ class TikTokGenerator:
         h = bg_height
         box_scale = 1
         box_width = int(width * box_scale)
-        box_height = int(width * box_scale) - 500
+        box_height = int(width * box_scale) - 700
 
         # Ensure dimensions are even (required by many codecs)
         if box_width % 2 != 0:
