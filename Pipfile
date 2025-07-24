@@ -4,11 +4,21 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-numpy = "*"
+numpy = "==1.22.4"
 opencv-python = "*"
 fire = "*"
 yt-dlp = {git = "https://github.com/yt-dlp/yt-dlp.git"}
 gtts = "*"
+moviepy = "==1.0.3"
+whisper = "*"
+TTS = "==0.11.1"
+scipy = "==1.10.1"
+numba = "==0.55.2"
+imageio = "*"
+imageio-ffmpeg = "*"
+pillow = "*"
+python-dotenv = "*"
+pydub = "*"
 
 [dev-packages]
 autopep8 = "*"

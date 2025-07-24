@@ -5,7 +5,7 @@ import fire
 from dl import download
 from facial_detection import facial_detection, draw_box
 from render import crop_video, extract_resolution, blur_video, create_mobile_video
-from tts import generate_voiceover
+from tts import generate_voiceover_with_captions, merge_voiceover_with_video_audio
 
 
 class TikTokGenerator:
@@ -35,7 +35,7 @@ class TikTokGenerator:
     def blur(self, path: str, blur: int = 15):
         blur_video(path, 'output.mp4', blur)
 
-    def generate(self, path: str, output: str = 'output', text1: str=None , text2:str =None, text3:str =None,fd_fps: int = 1, blur: int = 20, width=2160, height=3840, no_facecam: bool = False, fps: int = 60, x_offset: int = 0, y_offset: int = 0, cookies: str = None):
+    def generate(self, path: str, output: str = 'output', text1: str=None , text2:str =None,fd_fps: int = 1, blur: int = 20, width=2160, height=3840, no_facecam: bool = False, fps: int = 60, x_offset: int = 400, y_offset: int = 700, cookies: str = None):
         if path.startswith('http'):
             path = download(path, '.', cookies=cookies)
             # if there is a space in the filename, rename
@@ -81,13 +81,11 @@ class TikTokGenerator:
         y = 0
         crop_video(path, background, x, y, w, h, width, height)
         # get the center 1:1 content of the video
-        x = (bg_width - bg_height) / 2 + x_offset + 50
-        y = 0 + y_offset
-        w = bg_width
-        h = bg_height
+        box_width = min(bg_width, bg_height)
+        box_height = box_width
         box_scale = 1
-        box_width = int(width * box_scale)
-        box_height = int(width * box_scale) - 700
+        box_width = int(width * box_scale) + 300
+        box_height = int(width * box_scale) - 400
 
         # Ensure dimensions are even (required by many codecs)
         if box_width % 2 != 0:
@@ -97,18 +95,41 @@ class TikTokGenerator:
 
         crop_video(path, box, x, y, w, h, box_width, box_height)
         voice_path = None
-        if text3:
+        captions = None
+        delay=8.0
+        if text2:
             voice_path = f"{output}_voice.mp3"
-            generate_voiceover(text3, voice_path)
+            voice_captions =f"{output}_captions.srt"
+            voice_path, captions = generate_voiceover_with_captions(text2, audio_path=voice_path, srt_path=voice_captions, delay=delay)
 
-        create_mobile_video(background, box, facecam,
-                            f'{output}.mp4', text1, text2, blur_strength=blur, fps=fps, voiceover_file=voice_path)
+        intermediate_output = f'{output}_premerge.mp4'
+
+        create_mobile_video(
+            background_file=background,
+            content_file=box,
+            facecam_file=facecam,
+            output_file=intermediate_output,
+            overlay_text_top=text1,
+            captions=captions,
+            blur_strength=blur,
+            fps=fps,
+            voiceover_file=None
+        )
+        if voice_path:
+            merge_voiceover_with_video_audio(intermediate_output, voice_path, f'{output}.mp4', delay=delay)
+            os.remove(intermediate_output)
+        else:
+            os.rename(intermediate_output, f'{output}.mp4')
+        
         if not no_facecam:
             os.remove(facecam)
         os.remove(background)
         os.remove(box)
         os.remove(path)
-        os.remove(voice_path)
+        if voice_path:
+            os.remove(voice_path)
+        if voice_captions:
+            os.remove(voice_captions)
 
     def blur_box(self, path: str, output: str = 'output', blur: int = 20, width=1080, height=1920, fps: int = 60):
         '''Takes a square video, blurs it, makes it 9:16, then add the original video on top of it'''

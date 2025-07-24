@@ -8,6 +8,7 @@ def download(url, output_dir, output_format=None, cookies=None):
     ydl_opts = {
         'format': output_format,
         'outtmpl': os.path.join(output_dir, '%(title)s.%(ext)s'),
+        'noplaylist': True,
     }
     
     if cookies:

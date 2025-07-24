@@ -1,3 +1,4 @@
+import math
 import subprocess
 import os
 import textwrap
@@ -37,7 +38,7 @@ def create_mobile_video(
     facecam_file,
     output_file,
     overlay_text_top=None,
-    overlay_text_bottom=None,
+    captions=None,
     blur_strength=15,
     watermark_file=None,
     fps=60,
@@ -52,19 +53,6 @@ def create_mobile_video(
     filter_complex = f'[0:v] boxblur={blur_strength}:1 [a]; [a][1:v] overlay={content_x}:{content_y} [b]'
     last_label = 'b'
     input_index = 2
-
-    # Hardcoded text background image
-    # text_bg_path = os.path.join(os.path.dirname(__file__), 'background_title_4k.png')
-    # input_args += f' -i "{text_bg_path}"'
-    # filter_complex += f'; [{last_label}][{input_index}:v] overlay=0:440 [d]'
-    # last_label = 'd'
-    # input_index += 1
-
-    # text_bg_path2 = os.path.join(os.path.dirname(__file__), 'populargamingcontent_tag_4k.png')
-    # input_args += f' -i "{text_bg_path2}"'
-    # filter_complex += f'; [{last_label}][{input_index}:v] overlay=700:440 [d]'
-    # last_label = 'd'
-    # input_index += 1
 
     if facecam_file is not None:
         input_args += f' -i {facecam_file}'
@@ -94,31 +82,42 @@ def create_mobile_video(
                 f"text='{safe_text} ':" 
                 f"fontfile=Bangers-Regular.ttf:"
                 f"fontcolor=white:fontsize=190:x=(w-text_w)/2+12:y={y_pos}+20:"
-                f"borderw=8:bordercolor=black"
+                f"borderw=15:bordercolor=black"
                 f"[t{i}]"
             )
             last_label = f't{i}'
 
-    if overlay_text_bottom:
-        wrapped_lines = textwrap.wrap(overlay_text_bottom, width=25)
-        for i, line in enumerate(wrapped_lines):
-            safe_text = line.replace("'", r"\'") + "\u00A0\u00A0"
-            y_pos = f"h-{930 - i * 200}"
-            filter_complex += (
-                f'; [{last_label}]drawtext='
-                f"text='{safe_text} ':" 
-                f"fontfile=Bangers-Regular.ttf:"
-                f"fontcolor=white:fontsize=180:x=(w-text_w)/2+12:y={y_pos}:"
-                f"borderw=8:bordercolor=black"
-                f"[b{i}]"
-            )
-            last_label = f'b{i}'
+    if captions:
+        for i, (start, end, text) in enumerate(captions):
+            words = text.split()
+            chunk_size = 3
+            num_chunks = math.ceil(len(words) / chunk_size)
+            duration = end - start
+            chunk_duration = duration / num_chunks
+
+            for j in range(num_chunks):
+                chunk_start = start + j * chunk_duration
+                chunk_end = chunk_start + chunk_duration
+                chunk_words = words[j * chunk_size: (j + 1) * chunk_size]
+                chunk_text = " ".join(chunk_words).replace("'", r"\'") + "\u00A0\u00A0"
+                y_pos = "h-930"
+
+                filter_complex += (
+                    f"; [{last_label}]drawtext="
+                    f"text='{chunk_text}':"
+                    f"enable='between(t,{chunk_start},{chunk_end})':"
+                    f"fontfile=Bangers-Regular.ttf:"
+                    f"fontcolor=white:fontsize=180:x=(w-text_w)/2+12:y={y_pos}:"
+                    f"borderw=15:bordercolor=black"
+                    f"[cap{i}_{j}]"
+                )
+                last_label = f'cap{i}_{j}'
 
     if voiceover_file:
         input_args += f' -i {voiceover_file}'
         filter_complex += (
-        f'; [{input_index}:a]volume=3.0[vo]; '
-        f'[0:a][vo] amerge=inputs=2[aout]'
+            f'; [{input_index}:a]volume=3.0[vo]; '
+            f'[0:a][vo] amerge=inputs=2[aout]'
         )
         audio_map = f'-map "[{last_label}]" -map "[aout]" -ac 2'
     else:

@@ -5,3 +5,4 @@ __pycache__
 *.mov
 .DS_Store
 .env
+cookies.txt
