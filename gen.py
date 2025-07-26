@@ -54,7 +54,7 @@ class TikTokGenerator:
                 return True, filename
         return False, None
 
-    def generate(self, path: str, output: str = 'output', text1: str=None , text2:str =None, text3:str =None, blur: int = 20, width=2160, height=3840, fps: int = 60, cookies: str = None):
+    def generate(self, path: str, output: str = 'output', text1: str=None , text2:str =None, text3:str =None, delay:float = 3.0, blur: int = 20, width=2160, height=3840, fps: int = 60, cookies: str = None):
         exists, matched_file = self.is_text1_in_filenames(text1)
         if exists:
             print(f"File found matching text1: {matched_file}")
@@ -122,7 +122,6 @@ class TikTokGenerator:
             crop_video(path, box, x, y, square_size, square_size, box_width, box_height)
         voice_path = None
         captions = None
-        delay=3.0
         if text3 and text3.strip():
             voice_path = f"{output}_voice.mp3"
             voice_captions =f"{output}_captions.srt"

@@ -10,7 +10,7 @@ fire = "*"
 yt-dlp = {git = "https://github.com/yt-dlp/yt-dlp.git"}
 gtts = "*"
 moviepy = "==1.0.3"
-whisper = "*"
+"openai-whisper" = {git = "https://github.com/openai/whisper.git"}
 TTS = "==0.11.1"
 scipy = "==1.10.1"
 numba = "==0.55.2"

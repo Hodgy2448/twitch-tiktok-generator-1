@@ -58,7 +58,7 @@ def create_mobile_video(
         wrapped_lines = textwrap.wrap(overlay_text_top, width=25)
         for i, line in enumerate(wrapped_lines):
             safe_text = line.replace("'", r"\'") + "\u00A0\u00A0"
-            y_pos = f"h-{3250 - i * 200}"
+            y_pos = f"h-{3220 - i * 200}"
             filter_complex += (
                 f'; [{last_label}]drawtext='
                 f"text='{safe_text} ':" 
