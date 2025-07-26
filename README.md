@@ -16,18 +16,24 @@ pipenv shell
 
 
 
-python gen.py generate https://www.youtube.com/watch?v=dLGA0lrdGAs --text1 "Borderlands 4" --text2 "Rafa Gameplay" --text3 "" --cookies cookies.txt --no_facecam
+python gen.py generate https://www.youtube.com/watch?v=SHfjkx1qnSA --text1 "Cronos: The New Dawn" --text2 "Official Gameplay Trailer" --text3 "" --cookies cookies.txt
 
-New Borderlands Rafa Gameplay! This is going to be so good
+New singleplayer game where enemies merge into terrifying new forms unless you destroy their bodies—fast. A tense mix of survival horror, time travel, and grotesque strategy.
 
-Get ready for war on Kairos. Rafa the Exo‑Soldier delivers close‑quarters slashes, mid‑range cannon fire, and devastating plasma blasts from his Deadframe exo‑suit in this high‑octane gameplay showcase.
+Explore a brutal sci‑fi survival horror world where time travel and body horror collide. Played from a third‑person view, Cronos: The New Dawn puts you in the shoes of the Traveler, battling grotesque creatures that merge into more powerful abominations unless their corpses are burned immediately.
 
-Developer: Gearbox Software  
-Release Date: September 12, 2025 (PS5, Xbox Series X|S, PC); October 3, 2025 (Nintendo Switch 2)  
-Platforms: PlayStation 5, Xbox Series X|S, PC (Steam & Epic Games Store), Nintendo Switch 2
+Developer: Bloober Team  
+Release Date: 2025 (Fall—Q3/Q4)  
+Platforms: PlayStation 5, Windows PC, Xbox Series X|S
 
 
+------------
 
+python gen.py generate https://www.youtube.com/watch?v=PDe4NwHJAEQ --text1 "Elden Ring: Nightreign" --text2 "Official Two Player Mode Trailer" --text3 "" --cookies cookies.txt
+
+New singleplayer/coop game now adds two‑player Duo Expeditions mode launching July 30, 2025. Experience the same roguelike action as before but tailored for duos — no more riff‑raff trios or solo struggles.
+
+Explore a procedurally generated parallel of Limgrave—Limveld—where teams of up to three (now two) Nightfarers race through three days of combat, resource gathering, and shrinking safe zones before facing a Nightlord. This new mode delivers tighter, more focused co-op battles without sacrificing the core roguelike intensity of Nightreign.  
 
 
 

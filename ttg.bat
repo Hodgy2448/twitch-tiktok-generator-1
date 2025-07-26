@@ -1,5 +1,5 @@
 @echo off
-F:
+H:
 cd \twitch-tiktok-generator
 start notepad README.md
 pipenv shell
