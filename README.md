@@ -6,7 +6,7 @@
 
 python gen.py generate https://www.twitch.tv/thaqil/clip/ImpartialAnimatedClipzNomNom-JnLk34HYv3sNGbVC --output tiktokclip --text "THIS GUY IS SO BAD"
 python gen.py generate https://video.fastly.steamstatic.com/store_trailers/257121821/movie480_vp9.webm?t=1744279759 --text1 "Try To Drive – Official Co-op Gameplay Trailer" --text2 "Tandem cycling, chaos & teamwork" --cookies cookies.txt --no_facecam
-
+python gen.py generate https://www.youtube.com/watch?v=KK30yerMcsA --text1 "Out of Time" --text2 "New Co op Rouglike" --text3 "" --cookies cookies.txt --no_facecam
 DO THIS!!!
 f:
 cd twitch-
@@ -16,24 +16,15 @@ pipenv shell
 
 
 
-python gen.py generate https://www.youtube.com/watch?v=j9zHZK4zDnk --text1 "Eldramoorː Haven in the Mist" --text2 "new VRMMORPG game" --cookies cookies.txt --no_facecam
+python gen.py generate https://www.youtube.com/watch?v=dLGA0lrdGAs --text1 "Borderlands 4" --text2 "Rafa Gameplay" --text3 "" --cookies cookies.txt --no_facecam
 
-Experience a wild, fantastic landscape full of wonders, secrets, and the scars of a troubled history. Join friends old and new for fierce combat, clever crafting, deep customization, and a sprawling story that spans generations
+New Borderlands Rafa Gameplay! This is going to be so good
 
-Developer: Resolute Games, Inc. 
-Release Date: TBA
-Platforms: VR
+Get ready for war on Kairos. Rafa the Exo‑Soldier delivers close‑quarters slashes, mid‑range cannon fire, and devastating plasma blasts from his Deadframe exo‑suit in this high‑octane gameplay showcase.
 
------------------
-
-python gen.py generate https://video.fastly.steamstatic.com/store_trailers/257161242/movie480_vp9.webm?t=1750847500 --text1 "Scoot – Official Trailer" --text2 "Get ready to shred with Scoot, the ultimate scooter game on PC. Realistic physics, arcade-style fun. Nail insane tricks, gap stair sets, and dominate bowls with over 40 tricks and smooth, reworked animations. Explore gritty city spots or go huge on downhill mega-ramps. Build your own parks with rails, bowls, and jumps using the Park Builder. Play solo or with friends online. Record your best runs, customize your setup, and show off your style. Scoot—ride big, land clean, and make it yours. Available now on Steam." --cookies cookies.txt --no_facecam
-
-Scoot is an extreme scooter game packed with fast tricks, huge ramps, and wild environments. Pull off insane combos and challenge your friends to become the ultimate scooter pro.
-
-Developer: Tank Media  
-Release Date: September 2025  
-Platforms: PC (Steam)
-
+Developer: Gearbox Software  
+Release Date: September 12, 2025 (PS5, Xbox Series X|S, PC); October 3, 2025 (Nintendo Switch 2)  
+Platforms: PlayStation 5, Xbox Series X|S, PC (Steam & Epic Games Store), Nintendo Switch 2
 
 
 
@@ -75,6 +66,9 @@ if overlay_text_bottom:
             )
             last_label = f'b{i}'
 
+
+10 sec video:
+https://www.youtube.com/watch?v=lTTajzrSkCw
 
 # Twitch Clip to TikTok Generator
 

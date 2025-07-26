@@ -1,6 +1,5 @@
 import math
 import subprocess
-import os
 import textwrap
 
 
@@ -35,17 +34,18 @@ def blur_video(input_file: str, output_file: str, blur: int = 15):
 def create_mobile_video(
     background_file,
     content_file,
-    facecam_file,
     output_file,
     overlay_text_top=None,
+    overlay_text_bottom=None,
     captions=None,
     blur_strength=15,
-    watermark_file=None,
     fps=60,
     voiceover_file=None
 ):
     _, content_height = extract_resolution(content_file)
+    print(_, content_height)
     background_width, background_height = extract_resolution(background_file)
+    print(background_width, background_height)
     content_x = 0
     content_y = int((background_height - content_height) / 2)
 
@@ -54,34 +54,31 @@ def create_mobile_video(
     last_label = 'b'
     input_index = 2
 
-    if facecam_file is not None:
-        input_args += f' -i {facecam_file}'
-        facecam_width, _ = extract_resolution(facecam_file)
-        facecam_x = int((background_width - facecam_width) / 2)
-        facecam_y = 0
-        filter_complex += f'; [{last_label}][{input_index}:v] overlay={facecam_x}:{facecam_y} [c]'
-        last_label = 'c'
-        input_index += 1
-
-    if watermark_file:
-        input_args += f' -i {watermark_file}'
-        filter_complex += (
-            f'; [{last_label}][{input_index}:v] scale=500:100,colorchannelmixer=aa=0.5 [wm]; '
-            f'[wm] overlay=10:1720 [e]'
-        )
-        last_label = 'e'
-        input_index += 1
-
     if overlay_text_top:
         wrapped_lines = textwrap.wrap(overlay_text_top, width=25)
         for i, line in enumerate(wrapped_lines):
             safe_text = line.replace("'", r"\'") + "\u00A0\u00A0"
-            y_pos = f"h-{3050 - i * 200}"
+            y_pos = f"h-{3250 - i * 200}"
             filter_complex += (
                 f'; [{last_label}]drawtext='
                 f"text='{safe_text} ':" 
                 f"fontfile=Bangers-Regular.ttf:"
-                f"fontcolor=white:fontsize=190:x=(w-text_w)/2+12:y={y_pos}+20:"
+                f"fontcolor=lightblue:fontsize=230:x=(w-text_w)/2+12:y={y_pos}+20:"
+                f"borderw=15:bordercolor=black"
+                f"[t{i}]"\
+            )
+            last_label = f't{i}'
+
+    if overlay_text_bottom:
+        wrapped_lines = textwrap.wrap(overlay_text_bottom, width=25)
+        for i, line in enumerate(wrapped_lines):
+            safe_text = line.replace("'", r"\'") + "\u00A0\u00A0"
+            y_pos = f"h-{3000 - i * 200}"
+            filter_complex += (
+                f'; [{last_label}]drawtext='
+                f"text='{safe_text} ':" 
+                f"fontfile=Bangers-Regular.ttf:"
+                f"fontcolor=white:fontsize=160:x=(w-text_w)/2+10:y={y_pos}+20:"
                 f"borderw=15:bordercolor=black"
                 f"[t{i}]"
             )
@@ -124,7 +121,7 @@ def create_mobile_video(
         audio_map = f'-map "[{last_label}]" -map 0:a?'
 
     cmd = (
-        f'ffmpeg -y {input_args} -filter_complex "{filter_complex}" '
+        f'ffmpeg -y -r {fps} {input_args} -filter_complex "{filter_complex}" '
         f'{audio_map} -r {fps} '
         f'-c:v h264_nvenc -preset p7 -rc vbr -cq 19 -b:v 0 '
         f'-c:a aac -b:a 192k -pix_fmt yuv420p {output_file}'

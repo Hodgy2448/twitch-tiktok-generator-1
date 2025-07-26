@@ -1,4 +1,6 @@
 import os
+import re
+import unicodedata
 
 import fire
 
@@ -35,81 +37,104 @@ class TikTokGenerator:
     def blur(self, path: str, blur: int = 15):
         blur_video(path, 'output.mp4', blur)
 
-    def generate(self, path: str, output: str = 'output', text1: str=None , text2:str =None,fd_fps: int = 1, blur: int = 20, width=2160, height=3840, no_facecam: bool = False, fps: int = 60, x_offset: int = 400, y_offset: int = 700, cookies: str = None):
-        if path.startswith('http'):
-            path = download(path, '.', cookies=cookies)
-            # if there is a space in the filename, rename
-            if ' ' in path:
-                new_path = path.replace(' ', '_')
-                os.rename(path, new_path)
-                path = new_path
-            if '&' in path:
-                new_path = path.replace('&', '_')
-                os.rename(path, new_path)
-                path = new_path
-            if '|' in path:
-                new_path = path.replace('|', '_')
-                os.rename(path, new_path)
-                path = new_path
+    def is_text1_in_filenames(self, text1: str = None, folder='.'):
+
+        def sanitize(text):
+            if not text:
+                return ''
+            # Normalize Unicode (e.g., full-width to ASCII)
+            text = unicodedata.normalize('NFKC', text)
+            # Replace forbidden/unsafe characters with _
+            return re.sub(r'[\\/:*?"<>|&\s]', '_', text)
+
+        text1_sanitized = sanitize(text1)
+
+        for filename in os.listdir(folder):
+            if text1_sanitized in sanitize(filename):
+                return True, filename
+        return False, None
+
+    def generate(self, path: str, output: str = 'output', text1: str=None , text2:str =None, text3:str =None, blur: int = 20, width=2160, height=3840, fps: int = 60, cookies: str = None):
+        exists, matched_file = self.is_text1_in_filenames(text1)
+        if exists:
+            print(f"File found matching text1: {matched_file}")
+            path = matched_file
+            invalid_chars = [':', '：', ' ', '&', '|']
+            for char in invalid_chars:
+                if char in path:
+                    new_path = path.replace(char, '_')
+                    os.rename(path, new_path)
+                    path = new_path
+        else:
+            print("No file matching text1 found.")
+            if path.startswith('http'):
+                path = download(path, '.', cookies=cookies)
+                # if there is a space in the filename, rename
+                invalid_chars = [':', '：', ' ', '&', '|']
+                for char in invalid_chars:
+                    if char in path:
+                        new_path = path.replace(char, '_')
+                        os.rename(path, new_path)
+                        path = new_path
+            print(f"Downloaded file path: {path}")
         if height % 2 != 0:
             height -= 1
         if width % 2 != 0:
             width -= 1
-        output = text1
-        if ' ' in output:
-                new_output = output.replace(' ', '_')
-                output = new_output
-        background = f'{output}_background.mp4'
-        box = f'{output}_box.mp4'
-        facecam = None
-        if not no_facecam:
-            facecam = f'{output}_face.mp4'
-            # get facecam
-            x, y, x2, y2 = facial_detection(path, fd_fps)
-            w = x2 - x
-            h = y2 - y
-            output_h = int(height * 0.21875)
-            output_w = int(output_h * w / h)
-            if output_w % 2 != 0:
-                output_w -= 1
-            crop_video(path, facecam, x, y, w, h, output_w, output_h)
+        if text1 and text1.strip():
+            output = text1 + '_' + text2
+            invalid_chars = [':', '：', ' ', '&', '|']
+            for char in invalid_chars:
+                if char in output:
+                    output = output.replace(char, '_')
+
+            background = f'{output}_background.mp4'
+            box = f'{output}_box.mp4'
+            intermediate_output = f'{output}_premerge.mp4'
+
+            invalid_chars = [':', '：']
+            for char in invalid_chars:
+                if char in text1:
+                    text1 = text1.replace(char, 'ː')
+            print(text1)
+        else:
+            text1 = None
+            text2 = None
+            text3 = None
+            background = 'test_background.mp4'
+            box = 'test_box.mp4'
+            intermediate_output = 'test_premerge.mp4'
         # get background
-        bg_width, bg_height = extract_resolution(path)
-        h = bg_height
-        w = int(bg_height * 0.5625)  # 9/16 in decimal
-        x = (bg_width - w) / 2
-        y = 0
-        crop_video(path, background, x, y, w, h, width, height)
-        # get the center 1:1 content of the video
-        box_width = min(bg_width, bg_height)
-        box_height = box_width
-        box_scale = 1
-        box_width = int(width * box_scale) + 300
-        box_height = int(width * box_scale) - 400
-
-        # Ensure dimensions are even (required by many codecs)
-        if box_width % 2 != 0:
-            box_width -= 1
-        if box_height % 2 != 0:
-            box_height -= 1
-
-        crop_video(path, box, x, y, w, h, box_width, box_height)
+        if(not os.path.exists(background)):
+            bg_width, bg_height = extract_resolution(path)
+            h = bg_height
+            w = int(bg_height * 0.5625)  # 9/16 in decimal
+            x = (bg_width - w) / 2
+            y = 0
+            crop_video(path, background, x, y, w, h, width, height)
+        # get box
+        if(not os.path.exists(box)):
+            square_size = min(bg_width, bg_height)
+            x = (bg_width - square_size) // 2
+            y = (bg_height - square_size) // 2
+            box_width = 2160
+            box_height = 2160
+            crop_video(path, box, x, y, square_size, square_size, box_width, box_height)
         voice_path = None
         captions = None
-        delay=8.0
-        if text2:
+        delay=3.0
+        if text3 and text3.strip():
             voice_path = f"{output}_voice.mp3"
             voice_captions =f"{output}_captions.srt"
-            voice_path, captions = generate_voiceover_with_captions(text2, audio_path=voice_path, srt_path=voice_captions, delay=delay)
-
-        intermediate_output = f'{output}_premerge.mp4'
+            if(not os.path.exists(voice_path)):
+                voice_path, captions = generate_voiceover_with_captions(text3, audio_path=voice_path, srt_path=voice_captions, delay=delay)
 
         create_mobile_video(
             background_file=background,
             content_file=box,
-            facecam_file=facecam,
             output_file=intermediate_output,
             overlay_text_top=text1,
+            overlay_text_bottom=text2,
             captions=captions,
             blur_strength=blur,
             fps=fps,
@@ -121,14 +146,12 @@ class TikTokGenerator:
         else:
             os.rename(intermediate_output, f'{output}.mp4')
         
-        if not no_facecam:
-            os.remove(facecam)
         os.remove(background)
         os.remove(box)
         os.remove(path)
         if voice_path:
             os.remove(voice_path)
-        if voice_captions:
+        if text3:
             os.remove(voice_captions)
 
     def blur_box(self, path: str, output: str = 'output', blur: int = 20, width=1080, height=1920, fps: int = 60):

@@ -1,7 +1,7 @@
 import os
 import re
-import requests
-import whisper
+import requests # type: ignore
+import whisper # type: ignore
 from gtts import gTTS  # type: ignore
 from TTS.api import TTS as CoquiTTS  # type: ignore
 from moviepy.editor import VideoFileClip, AudioFileClip, CompositeAudioClip  # type: ignore
